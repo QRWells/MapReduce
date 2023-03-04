@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3F6D34F9-1718-4928-AFD0-89864D8FF3EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapReduce", "src\MapReduce\MapReduce.csproj", "{8A574918-60D6-4C0F-B565-719327FE1E4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapReduce.Rpc", "src\MapReduce.Rpc\MapReduce.Rpc.csproj", "{81B80D70-9F39-4137-9FEB-D8891142F7C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{B4C15C44-15D0-4C79-BE26-BBFE0D0DD926}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCount", "example\WordCount\WordCount.csproj", "{8209E805-C0B0-4491-9218-BA582AC0A82C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A574918-60D6-4C0F-B565-719327FE1E4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A574918-60D6-4C0F-B565-719327FE1E4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A574918-60D6-4C0F-B565-719327FE1E4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A574918-60D6-4C0F-B565-719327FE1E4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8209E805-C0B0-4491-9218-BA582AC0A82C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8209E805-C0B0-4491-9218-BA582AC0A82C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8209E805-C0B0-4491-9218-BA582AC0A82C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8209E805-C0B0-4491-9218-BA582AC0A82C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81B80D70-9F39-4137-9FEB-D8891142F7C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81B80D70-9F39-4137-9FEB-D8891142F7C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81B80D70-9F39-4137-9FEB-D8891142F7C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81B80D70-9F39-4137-9FEB-D8891142F7C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8209E805-C0B0-4491-9218-BA582AC0A82C} = {B4C15C44-15D0-4C79-BE26-BBFE0D0DD926}
+		{8A574918-60D6-4C0F-B565-719327FE1E4E} = {3F6D34F9-1718-4928-AFD0-89864D8FF3EE}
+		{81B80D70-9F39-4137-9FEB-D8891142F7C1} = {3F6D34F9-1718-4928-AFD0-89864D8FF3EE}
+	EndGlobalSection
+EndGlobal
