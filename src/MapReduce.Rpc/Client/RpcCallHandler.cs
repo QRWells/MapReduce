@@ -1,13 +1,15 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Reflection;
 
 namespace QRWells.MapReduce.Rpc.Client;
 
-public class RpcCallHandler : ISerializable
+public class RpcCallHandler
 {
-    public string MethodName { get; set; }
-    public Dictionary<string, object> Parameters { get; set; }
-
-    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    public RpcCallHandler(MethodInfo methodInfo)
     {
+        MethodInfo = methodInfo;
+        ResultType = methodInfo.ReturnType;
     }
+
+    public Type ResultType { get; set; }
+    public MethodInfo MethodInfo { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using QRWells.MapReduce.Rpc.Client;
+﻿using QRWells.MapReduce.Method;
+using QRWells.MapReduce.Rpc.Client;
 
 namespace QRWells.MapReduce;
 
@@ -10,6 +11,19 @@ public class Worker : IDisposable
 
     public IMapper Mapper { get; set; }
     public IReducer Reducer { get; set; }
+
+    public int Port { get; set; } = 8080;
+    public string Host { get; set; } = "localhost";
+    public MethodProxy MethodProxy { get; set; }
+
+    public void Dispose()
+    {
+        Volatile.Write(ref _isRunning, false);
+
+        _rpcClient.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
 
     public async Task Start()
     {
@@ -38,10 +52,5 @@ public class Worker : IDisposable
     private void DoReduceTask()
     {
         throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        Volatile.Write(ref _isRunning, false);
     }
 }

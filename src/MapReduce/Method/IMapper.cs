@@ -1,4 +1,4 @@
-﻿namespace QRWells.MapReduce;
+﻿namespace QRWells.MapReduce.Method;
 
 public interface IMapper
 {

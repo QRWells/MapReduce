@@ -9,6 +9,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1"/>
+        <PackageReference Include="NetCoreServer" Version="7.0.0"/>
+        <PackageReference Include="System.IO.Pipelines" Version="7.0.0"/>
     </ItemGroup>
 
 </Project>

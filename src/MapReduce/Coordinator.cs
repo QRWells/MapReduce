@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using QRWells.MapReduce.Hosts;
 using QRWells.MapReduce.Rpc.Attributes;
 
 namespace QRWells.MapReduce;
@@ -20,9 +21,20 @@ public class Coordinator : ICoordinator
 
     private int _timeout = 5000;
 
-    public Coordinator(int numberReduce, params string[] files)
+    public Coordinator(CoordinatorConfig config)
     {
-        _numberReduce = numberReduce;
+        _numberReduce = config.NumberReduce;
+        foreach (var file in config.Files)
+        {
+            var mapTask = new MapTask
+            {
+                Status = TaskStatusIdle,
+                File = file
+            };
+            _mapTasks.Add(_mapTasks.Count, mapTask);
+        }
+
+        config.Configure?.Invoke(this);
     }
 
     public Task<ITaskResult> RequestTask()

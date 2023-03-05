@@ -1,4 +1,4 @@
-﻿using QRWells.MapReduce;
+﻿using QRWells.MapReduce.Method;
 
 namespace Example.WordCount;
 
