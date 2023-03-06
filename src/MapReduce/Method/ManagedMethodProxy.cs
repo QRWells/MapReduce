@@ -1,22 +1,23 @@
-﻿using System.Reflection;
-
-namespace QRWells.MapReduce.Method;
+﻿namespace QRWells.MapReduce.Method;
 
 public class ManagedMethodProxy : MethodProxy
 {
-    private object callerInstance;
-    private MethodInfo mapMethod;
-    private MethodInfo reduceMethod;
+    private readonly IMapper _mapperInstance;
+    private readonly IReducer _reducerInstance;
+
+    internal ManagedMethodProxy(IMapper mapperInstance, IReducer reducerInstance)
+    {
+        _mapperInstance = mapperInstance;
+        _reducerInstance = reducerInstance;
+    }
 
     public override IEnumerable<KeyValuePair<string, string>> Map(string key, string value)
     {
-        return (IEnumerable<KeyValuePair<string, string>>)
-            (mapMethod.Invoke(null, new object[] { key, value }) ??
-             Enumerable.Empty<KeyValuePair<string, string>>());
+        return _mapperInstance.Map(key, value);
     }
 
     public override string Reduce(string key, IEnumerable<string> values)
     {
-        return (string)(reduceMethod.Invoke(null, new object[] { key, values }) ?? string.Empty);
+        return _reducerInstance.Reduce(key, values);
     }
 }
