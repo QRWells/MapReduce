@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>QRWells.MapReduce</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,12 +17,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BeetleX.XRPC.Hosting" Version="1.2.0.1802"/>
-        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
+        <PackageReference Include="BeetleX.XRPC.Hosting" Version="1.2.0.1802" />
+        <PackageReference Include="CommandLineParser" Version="2.9.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MapReduce.Rpc\MapReduce.Rpc.csproj"/>
+        <ProjectReference Include="..\MapReduce.Rpc\MapReduce.Rpc.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using BeetleX.XRPC.Clients;
-using BeetleX.XRPC.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using QRWells.MapReduce.Hosts;
 using QRWells.MapReduce.Rpc.Extensions;
