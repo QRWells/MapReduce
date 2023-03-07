@@ -17,11 +17,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MapReduce.Rpc\MapReduce.Rpc.csproj" />
+        <ProjectReference Include="..\MapReduce.Rpc\MapReduce.Rpc.csproj"/>
     </ItemGroup>
 
 </Project>

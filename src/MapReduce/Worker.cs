@@ -1,29 +1,29 @@
-﻿using System.IO.Pipelines;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using QRWells.MapReduce.Method;
 using QRWells.MapReduce.Rpc.Client;
-using QRWells.MapReduce.Rpc.Utils;
+using QRWells.MapReduce.Utils;
 
 namespace QRWells.MapReduce;
 
 public class Worker : IDisposable
 {
-    private ICoordinator _coordinator;
+    private readonly ICoordinator _coordinator;
     private bool _isRunning;
-    private RpcClient _rpcClient;
-    public Guid Id { get; } = Guid.NewGuid();
-    public HashAlgorithm Hasher { get; set; } = FNV1a.Create(FNVBits.Bits32);
-
-    public int Port { get; set; } = 8080;
-    public string Host { get; set; } = "localhost";
-    public MethodProxy MethodProxy { get; set; }
+    private readonly RpcClient _rpcClient;
 
     public Worker()
     {
         _rpcClient = new RpcClient(Host, Port);
         _coordinator = _rpcClient.GetService<ICoordinator>();
     }
+
+    public Guid Id { get; } = Guid.NewGuid();
+    public HashAlgorithm Hasher { get; set; } = FNV1a.Create(FNVBits.Bits32);
+
+    public int Port { get; set; } = 8080;
+    public string Host { get; set; } = "localhost";
+    public MethodProxy MethodProxy { get; set; }
 
     public void Dispose()
     {
@@ -72,9 +72,7 @@ public class Worker : IDisposable
         {
             var reduce = Hash(key) % task.NumberReduce;
             if (!reduceFile.ContainsKey(reduce))
-            {
                 reduceFile[reduce] = new FileStream($"mr-{task.TaskId}-{reduce}", FileMode.Create);
-            }
 
             var writer = new StreamWriter(reduceFile[reduce]);
             writer.WriteLine($"{key} {value}");
@@ -119,16 +117,10 @@ public class Worker : IDisposable
         while (i < intermediate.Count)
         {
             var j = i + 1;
-            while (j < intermediate.Count && intermediate[j].Key == intermediate[i].Key)
-            {
-                j++;
-            }
+            while (j < intermediate.Count && intermediate[j].Key == intermediate[i].Key) j++;
 
             var values = new List<string>();
-            for (var k = i; k < j; k++)
-            {
-                values.Add(intermediate[k].Value);
-            }
+            for (var k = i; k < j; k++) values.Add(intermediate[k].Value);
 
             var result = MethodProxy.Reduce(intermediate[i].Key, values);
             writer.WriteLine($"{intermediate[i].Key} {result}");

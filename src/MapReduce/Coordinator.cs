@@ -50,7 +50,7 @@ public class Coordinator : ICoordinator
             if (mapTask.Key != -1)
             {
                 mapTask.Value.Status = TaskStatusRunning;
-                task = Task.FromResult<TaskResult>(new TaskResult
+                task = Task.FromResult(new TaskResult
                 {
                     TaskId = mapTask.Key,
                     NumberReduce = _numberReduce,
@@ -79,7 +79,7 @@ public class Coordinator : ICoordinator
             if (reduceTask.Key != -1)
             {
                 reduceTask.Value.Status = TaskStatusRunning;
-                task = Task.FromResult<TaskResult>(new TaskResult
+                task = Task.FromResult(new TaskResult
                 {
                     TaskId = reduceTask.Key,
                     Keys = reduceTask.Value.Keys

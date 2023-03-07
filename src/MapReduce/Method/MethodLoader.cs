@@ -61,14 +61,10 @@ public static class MethodLoader
             }
 
             if (type.GetInterface(nameof(IMapper)) is not null && mapperInstance is null)
-            {
                 mapperInstance = Activator.CreateInstance(type) as IMapper;
-            }
 
             if (type.GetInterface(nameof(IReducer)) is not null && reducerInstance is null)
-            {
                 reducerInstance = Activator.CreateInstance(type) as IReducer;
-            }
         }
 
         if (mapperInstance is not null && reducerInstance is not null)

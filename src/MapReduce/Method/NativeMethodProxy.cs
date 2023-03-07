@@ -4,18 +4,20 @@ namespace QRWells.MapReduce.Method;
 
 public class NativeMethodProxy : MethodProxy, IDisposable
 {
+    private readonly nint _libHandle;
     private readonly MapDelegate _mapHandle;
     private readonly ReduceDelegate _reduceHandle;
-    private readonly nint _libHandle;
-
-    private unsafe delegate void MapDelegate(char* key, char* value, char** resultKey, char** resultValue, int* count);
-    private unsafe delegate char* ReduceDelegate(char* key, char** values, int count);
 
     internal NativeMethodProxy(nint libHandle, nint mapHandle, nint reduceHandle)
     {
         _libHandle = libHandle;
         _mapHandle = Marshal.GetDelegateForFunctionPointer<MapDelegate>(mapHandle);
         _reduceHandle = Marshal.GetDelegateForFunctionPointer<ReduceDelegate>(reduceHandle);
+    }
+
+    public void Dispose()
+    {
+        NativeLibrary.Free(_libHandle);
     }
 
     public override IEnumerable<KeyValuePair<string, string>> Map(string key, string value)
@@ -69,8 +71,7 @@ public class NativeMethodProxy : MethodProxy, IDisposable
         return result;
     }
 
-    public void Dispose()
-    {
-        NativeLibrary.Free(_libHandle);
-    }
+    private unsafe delegate void MapDelegate(char* key, char* value, char** resultKey, char** resultValue, int* count);
+
+    private unsafe delegate char* ReduceDelegate(char* key, char** values, int count);
 }
