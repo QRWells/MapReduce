@@ -16,7 +16,7 @@ public class Coordinator : ICoordinator
     private static readonly NoTaskResult NoTaskResult = new();
     private readonly object _lock = new();
     private readonly Dictionary<int, MapTask> _mapTasks = new();
-    private readonly int _numberReduce;
+    private readonly uint _numberReduce;
     private readonly Dictionary<int, ReduceTask> _reduceTasks = new();
 
     private int _timeout = 5000;
@@ -37,11 +37,11 @@ public class Coordinator : ICoordinator
         config.Configure?.Invoke(this);
     }
 
-    public Task<ITaskResult> RequestTask()
+    public Task<TaskResult> RequestTask()
     {
         Monitor.Enter(_lock);
 
-        var task = Task.FromResult<ITaskResult>(NoTaskResult);
+        var task = Task.FromResult<TaskResult>(NoTaskResult);
 
         if (_mapTasks.Count > 0)
         {
@@ -50,7 +50,7 @@ public class Coordinator : ICoordinator
             if (mapTask.Key != -1)
             {
                 mapTask.Value.Status = TaskStatusRunning;
-                task = Task.FromResult<ITaskResult>(new MapTaskResult
+                task = Task.FromResult<TaskResult>(new TaskResult
                 {
                     TaskId = mapTask.Key,
                     NumberReduce = _numberReduce,
@@ -79,7 +79,7 @@ public class Coordinator : ICoordinator
             if (reduceTask.Key != -1)
             {
                 reduceTask.Value.Status = TaskStatusRunning;
-                task = Task.FromResult<ITaskResult>(new ReduceTaskResult
+                task = Task.FromResult<TaskResult>(new TaskResult
                 {
                     TaskId = reduceTask.Key,
                     Keys = reduceTask.Value.Keys
@@ -138,11 +138,9 @@ public class Coordinator : ICoordinator
     }
 
     [Ignore]
-    public Coordinator SetTimeout(int timeout)
+    public Coordinator SetTimeout(uint timeout)
     {
-        if (timeout < 0) throw new ArgumentOutOfRangeException(nameof(timeout));
-
-        _timeout = timeout;
+        _timeout = (int)timeout;
         return this;
     }
 }
@@ -161,35 +159,23 @@ public class ReduceTask
 
 public interface ICoordinator
 {
-    Task<ITaskResult> RequestTask();
+    Task<TaskResult> RequestTask();
     Task CompleteMapTask(int taskId, IEnumerable<int> results);
     Task CompleteReduceTask(int taskId);
 }
 
-public interface ITaskResult
+public class TaskResult
 {
-    TaskType Type { get; }
-    int TaskId { get; set; }
-}
-
-public class MapTaskResult : ITaskResult
-{
-    public int NumberReduce { get; set; }
+    public TaskType Type { get; }
+    public int TaskId { get; set; }
+    public uint NumberReduce { get; set; }
     public string File { get; set; }
-    public TaskType Type { get; } = TaskType.Map;
-    public int TaskId { get; set; }
-}
-
-public class ReduceTaskResult : ITaskResult
-{
     public IEnumerable<int> Keys { get; set; }
-    public TaskType Type { get; } = TaskType.Reduce;
-    public int TaskId { get; set; }
 }
 
-public class NoTaskResult : ITaskResult
+public class NoTaskResult : TaskResult
 {
-    public TaskType Type { get; } = TaskType.None;
+    public TaskType Type => TaskType.None;
     public int TaskId { get; set; } = -1;
 }
 

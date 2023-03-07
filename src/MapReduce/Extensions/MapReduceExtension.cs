@@ -8,9 +8,9 @@ namespace QRWells.MapReduce.Extensions;
 
 public static class MapReduceExtension
 {
-    public static IServiceCollection UseCoordinator(this IServiceCollection services, int nReduce, int port,
+    public static IServiceCollection UseCoordinator(this IServiceCollection services, uint nReduce, int port,
         IEnumerable<string> files,
-        Action<Coordinator> configure, Action<RpcServer>? configureRpc = null)
+        Action<Coordinator>? configure, Action<RpcServer>? configureRpc = null)
     {
         services.AddSingleton(new CoordinatorConfig
         {
