@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using QRWells.MapReduce.Rpc.Extensions;
 
 namespace QRWells.MapReduce.Rpc.Codecs;
 
@@ -24,7 +25,21 @@ public class JsonCodec : ICodec
         return await JsonSerializer.DeserializeAsync<T>(bytes, options);
     }
 
-    public class ObjectToInferredTypesConverter : JsonConverter<object>
+    public dynamic ExtractResult(object? o, Type returnType)
+    {
+        var dict = o as Dictionary<string, object?>;
+        if (returnType == typeof(Task)) return Task.CompletedTask;
+        var isTask = returnType.GetGenericTypeDefinition() == typeof(Task<>);
+        var rawObj = isTask
+            ? dict["Result"]
+            : dict;
+        var type = isTask ? returnType.GetGenericArguments()[0] : returnType;
+        var t = ((IDictionary<string, object>)rawObj).ToObject(type);
+        // convert to the correct type
+        return isTask ? Task.FromResult(t) : t;
+    }
+
+    private class ObjectToInferredTypesConverter : JsonConverter<object>
     {
         public override object Read(
             ref Utf8JsonReader reader,
@@ -39,6 +54,9 @@ public class JsonCodec : ICodec
                 JsonTokenType.Number when reader.TryGetInt64(out var l) => l,
                 JsonTokenType.Number => reader.GetDouble(),
                 JsonTokenType.String => reader.GetString()!,
+                JsonTokenType.StartArray => JsonSerializer.Deserialize<List<object>>(ref reader, options)!,
+                JsonTokenType.StartObject =>
+                    JsonSerializer.Deserialize<Dictionary<string, object>>(ref reader, options)!,
                 _ => JsonDocument.ParseValue(ref reader).RootElement.Clone()
             };
         }

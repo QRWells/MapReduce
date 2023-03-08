@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using System.Reflection;
-using QRWells.MapReduce.Rpc.Attributes;
 using QRWells.MapReduce.Rpc.Data;
 
 namespace QRWells.MapReduce.Rpc.Client;
@@ -18,15 +17,16 @@ public class CallingProxy : DispatchProxy
             Service = ServiceName,
             Method = targetMethod?.Name
         };
-
+        var parameters = targetMethod?.GetParameters();
+        var len = parameters?.Length ?? args?.Length ?? 0;
         if (args != null)
-            for (var i = 0; i < args.Length; i++)
-                request.Parameters.Add(targetMethod.GetParameters()[i].Name, args[i]);
+            for (var i = 0; i < len; i++)
+                request.Parameters.Add(parameters[i].Name, args[i]);
 
         var body = Client.Codec.EncodeAsync(request).Result;
         var req = new HttpRequestMessage();
 
-        req.RequestUri = new Uri("/");
+        req.RequestUri = Client.BaseAddress;
         req.Version = new Version(1, 1);
         req.Method = HttpMethod.Post;
         req.Content = new StringContent(body);
@@ -39,7 +39,8 @@ public class CallingProxy : DispatchProxy
             var rpcResponse = Client.Codec.DecodeAsync<RpcResponse>(result).Result;
             if (rpcResponse == null) return null;
             if (rpcResponse.Error != null) throw new Exception(rpcResponse.Error);
-            return rpcResponse.Result;
+
+            return Client.Codec.ExtractResult(rpcResponse.Result, targetMethod?.ReturnType!);
         }
         catch (HttpRequestException e)
         {

@@ -43,12 +43,12 @@ public static class ServiceExtension
 
     public static IEndpointConventionBuilder MapRpc(this IEndpointRouteBuilder endpoints, string basePath = "/rpc")
     {
-        return endpoints.MapPost(basePath, async (HttpRequest request, RpcService service) =>
+        return endpoints.MapPost(basePath, async (HttpContext context, RpcService service) =>
         {
-            var rpcResponse = await service.Invoke(request.Body);
-            return rpcResponse.Error is not null
-                ? Results.BadRequest(rpcResponse.Error)
-                : Results.Ok(rpcResponse.Result);
+            var rpcResponse = await service.Invoke(context.Request.Body);
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = rpcResponse.Error != null ? 400 : 200;
+            await context.Response.WriteAsync(rpcResponse.Result!);
         });
     }
 }

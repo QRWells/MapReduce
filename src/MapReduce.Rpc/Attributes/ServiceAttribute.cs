@@ -5,9 +5,9 @@ namespace QRWells.MapReduce.Rpc.Attributes;
 [AttributeUsage(AttributeTargets.Class)]
 public class ServiceAttribute : Attribute
 {
-    public ServiceAttribute(Type contract, ServiceLifetime lifetime = ServiceLifetime.Transient)
+    public ServiceAttribute(Type serviceType, ServiceLifetime lifetime = ServiceLifetime.Transient)
     {
-        ServiceType = contract;
+        ServiceType = serviceType;
         Lifetime = lifetime;
     }
 
