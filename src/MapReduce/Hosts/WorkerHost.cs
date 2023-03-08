@@ -14,12 +14,15 @@ public class WorkerHost : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _worker = new Worker();
+        _config.Configure?.Invoke(_worker);
+        return _worker.Start();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _worker.Dispose();
+        return Task.CompletedTask;
     }
 }
 
