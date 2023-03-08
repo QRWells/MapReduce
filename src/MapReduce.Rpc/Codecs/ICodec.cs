@@ -1,9 +1,7 @@
-﻿using QRWells.MapReduce.Rpc.Client;
-
-namespace QRWells.MapReduce.Rpc.Codecs;
+﻿namespace QRWells.MapReduce.Rpc.Codecs;
 
 public interface ICodec
 {
-    byte[] Encode(RpcCallHandler obj);
-    RpcCallHandler Decode(byte[] bytes);
+    Task<string> EncodeAsync<T>(T obj);
+    Task<T?> DecodeAsync<T>(Stream bytes);
 }

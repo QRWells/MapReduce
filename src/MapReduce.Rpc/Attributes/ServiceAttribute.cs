@@ -7,10 +7,11 @@ public class ServiceAttribute : Attribute
 {
     public ServiceAttribute(Type contract, ServiceLifetime lifetime = ServiceLifetime.Transient)
     {
-        Contract = contract;
+        ServiceType = contract;
         Lifetime = lifetime;
     }
 
-    public ServiceLifetime Lifetime { get; }
-    public Type Contract { get; }
+    public ServiceLifetime Lifetime { get; set; }
+    public Type ServiceType { get; set; }
+    public string? Name { get; set; }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
-using QRWells.MapReduce.Rpc.Data;
-using HttpClient = NetCoreServer.HttpClient;
+using QRWells.MapReduce.Rpc.Codecs;
 
 namespace QRWells.MapReduce.Rpc.Client;
 
@@ -8,25 +7,31 @@ public class RpcClient : HttpClient
 {
     private readonly Dictionary<Type, CallingProxy> _proxyCache = new();
 
-    public RpcClient(string host, int port) : base(host, port)
+    public RpcClient(string host, int port = 80, string path = "/rpc")
     {
+        ReadOnlySpan<char> RemoveSlash(ReadOnlySpan<char> span)
+        {
+            if (span[0] == '/') span = span[1..];
+            if (span[^1] == '/') span = span[..^1];
+            return span;
+        }
+
+        BaseAddress = new Uri($"http://{RemoveSlash(host)}:{port}/{RemoveSlash(path)}");
     }
 
-    public T GetService<T>() where T : class
+    public ICodec Codec { get; set; } = new JsonCodec();
+
+    public T GetService<T>(string? name = null) where T : class
     {
-        if (_proxyCache.TryGetValue(typeof(T), out var p)) return (T)(object)p;
+        var type = typeof(T);
+        if (_proxyCache.TryGetValue(type, out var p)) return (T)(object)p;
 
         var proxy = DispatchProxy.Create<T, CallingProxy>();
         var callingProxy = (CallingProxy)(object)proxy;
-        callingProxy.InterfaceType = typeof(T);
+        callingProxy.ServiceName = name ?? type.Name;
+        callingProxy.InterfaceType = type;
         callingProxy.Client = this;
-        callingProxy.Build();
-        _proxyCache.Add(typeof(T), callingProxy);
+        _proxyCache.Add(type, callingProxy);
         return proxy;
-    }
-
-    public Task<RpcPacket> Call(RpcPacket packet)
-    {
-        return Task.FromResult(packet);
     }
 }

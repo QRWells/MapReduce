@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\MapReduce\MapReduce.csproj"/>
+        <ProjectReference Include="..\..\src\MapReduce\MapReduce.csproj" />
     </ItemGroup>
 
 </Project>

@@ -33,16 +33,15 @@ public class RpcServerHost : IHostedService
         {
             var service = type.GetCustomAttribute<ServiceAttribute>(false);
             if (service == null) continue;
-            var serviceDescriptor = new ServiceDescriptor(service.Contract, type, service.Lifetime);
+            var serviceDescriptor = new ServiceDescriptor(service.ServiceType, type, service.Lifetime);
             _rpcServices.Add(serviceDescriptor);
         }
 
         _rpcServiceProvider = _rpcServices.BuildServiceProvider();
         _rpcServer = new RpcServer(_rpcServerArgs.Port, _rpcServiceProvider);
         _rpcServerArgs.ServerConfiguration?.Invoke(_rpcServer);
-        _rpcServer.Open();
 
-        _logger.LogInformation("RPC Server started on port {Port}", _rpcServerArgs.Port);
+        _logger.LogInformation("RPC Master started on port {Port}", _rpcServerArgs.Port);
 
         return Task.CompletedTask;
     }
@@ -50,8 +49,7 @@ public class RpcServerHost : IHostedService
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _rpcServices.Clear();
-        _rpcServer.Dispose();
-        _logger.LogInformation("RPC Server stopped");
+        _logger.LogInformation("RPC Master stopped");
         return Task.CompletedTask;
     }
 }
