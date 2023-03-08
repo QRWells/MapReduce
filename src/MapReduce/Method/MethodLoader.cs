@@ -41,6 +41,11 @@ public static class MethodLoader
                 return false;
             }
         }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
     }
 
     private static ManagedMethodProxy LoadManaged(Assembly assembly)

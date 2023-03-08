@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using QRWells.MapReduce.Hosts;
 using QRWells.MapReduce.Rpc.Attributes;
 
@@ -13,15 +14,16 @@ public class Coordinator : ICoordinator
 
     private static readonly KeyValuePair<int, MapTask> EmptyMapTask = new(-1, new MapTask());
     private static readonly KeyValuePair<int, ReduceTask> EmptyReduceTask = new(-1, new ReduceTask());
-    private static readonly NoTaskResult NoTaskResult = new();
+    private static readonly TaskResult NoTaskResult = new() { TaskId = -1 };
     private readonly object _lock = new();
     private readonly Dictionary<int, MapTask> _mapTasks = new();
     private readonly uint _numberReduce;
     private readonly Dictionary<int, ReduceTask> _reduceTasks = new();
+    private readonly List<Task> _tasks = new();
 
     private int _timeout = 5000;
 
-    public Coordinator(CoordinatorConfig config)
+    public Coordinator(CoordinatorConfig config, IHostApplicationLifetime lifetime)
     {
         _numberReduce = config.NumberReduce;
         foreach (var file in config.Files)
@@ -34,6 +36,8 @@ public class Coordinator : ICoordinator
             _mapTasks.Add(_mapTasks.Count, mapTask);
         }
 
+        AllTasksCompleted += (_, _) => lifetime.StopApplication();
+
         config.Configure?.Invoke(this);
     }
 
@@ -41,7 +45,7 @@ public class Coordinator : ICoordinator
     {
         Monitor.Enter(_lock);
 
-        var task = Task.FromResult<TaskResult>(NoTaskResult);
+        var task = Task.FromResult(NoTaskResult);
 
         if (_mapTasks.Count > 0)
         {
@@ -52,12 +56,13 @@ public class Coordinator : ICoordinator
                 mapTask.Value.Status = TaskStatusRunning;
                 task = Task.FromResult(new TaskResult
                 {
+                    Type = TaskType.Map,
                     TaskId = mapTask.Key,
                     NumberReduce = _numberReduce,
                     File = mapTask.Value.File
                 });
 
-                Task.Run(async () =>
+                var t = Task.Run(async () =>
                 {
                     async Task Timeout(int key)
                     {
@@ -70,6 +75,7 @@ public class Coordinator : ICoordinator
 
                     await Timeout(mapTask.Key);
                 });
+                _tasks.Add(t);
             }
         }
         else if (_reduceTasks.Count > 0)
@@ -81,11 +87,12 @@ public class Coordinator : ICoordinator
                 reduceTask.Value.Status = TaskStatusRunning;
                 task = Task.FromResult(new TaskResult
                 {
+                    Type = TaskType.Reduce,
                     TaskId = reduceTask.Key,
                     Keys = reduceTask.Value.Keys
                 });
 
-                Task.Run(async () =>
+                var t = Task.Run(async () =>
                 {
                     async Task Timeout(int key)
                     {
@@ -98,8 +105,14 @@ public class Coordinator : ICoordinator
 
                     await Timeout(reduceTask.Key);
                 });
+                _tasks.Add(t);
             }
         }
+
+        _tasks.RemoveAll(t => t.IsCompleted);
+
+        if (_mapTasks.Count == 0 && _reduceTasks.Count == 0 && _tasks.Count == 0)
+            AllTasksCompleted?.Invoke(this, EventArgs.Empty);
 
         Monitor.Exit(_lock);
 
@@ -137,6 +150,8 @@ public class Coordinator : ICoordinator
         return Task.CompletedTask;
     }
 
+    public event EventHandler? AllTasksCompleted;
+
     public Coordinator SetTimeout(uint timeout)
     {
         _timeout = (int)timeout;
@@ -165,17 +180,11 @@ public interface ICoordinator
 
 public class TaskResult
 {
-    public TaskType Type { get; }
+    public TaskType Type { get; set; }
     public int TaskId { get; set; }
     public uint NumberReduce { get; set; }
     public string File { get; set; }
     public IEnumerable<int> Keys { get; set; }
-}
-
-public class NoTaskResult : TaskResult
-{
-    public TaskType Type => TaskType.None;
-    public int TaskId { get; set; } = -1;
 }
 
 public enum TaskType
