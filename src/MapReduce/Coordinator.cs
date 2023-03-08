@@ -137,7 +137,6 @@ public class Coordinator : ICoordinator
         return Task.CompletedTask;
     }
 
-    [Ignore]
     public Coordinator SetTimeout(uint timeout)
     {
         _timeout = (int)timeout;

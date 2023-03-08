@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using QRWells.MapReduce.Hosts;
 using QRWells.MapReduce.Rpc.Extensions;
 using QRWells.MapReduce.Rpc.Server;
@@ -18,11 +17,11 @@ public static class MapReduceExtension
             NumberReduce = nReduce,
             Configure = configure
         });
-        return services.UseRpc(Assembly.GetCallingAssembly(), port, configureRpc);
+        return services.ConfigureRpc();
     }
 
     public static IServiceCollection UseWorker(this IServiceCollection services,
-        Action<Worker> configure = null)
+        Action<Worker>? configure = null)
     {
         services.AddSingleton(new WorkerConfig
         {

@@ -9,8 +9,8 @@ namespace QRWells.MapReduce;
 public class Worker : IDisposable
 {
     private readonly ICoordinator _coordinator;
-    private bool _isRunning;
     private readonly RpcClient _rpcClient;
+    private bool _isRunning;
 
     public Worker()
     {

@@ -25,5 +25,5 @@ public class WorkerHost : IHostedService
 
 public class WorkerConfig
 {
-    public Action<Worker> Configure { get; init; }
+    public Action<Worker>? Configure { get; init; }
 }
