@@ -112,7 +112,9 @@ public class Coordinator : ICoordinator
         _tasks.RemoveAll(t => t.IsCompleted);
 
         if (_mapTasks.Count == 0 && _reduceTasks.Count == 0 && _tasks.Count == 0)
+        {
             AllTasksCompleted?.Invoke(this, EventArgs.Empty);
+        }
 
         Monitor.Exit(_lock);
 

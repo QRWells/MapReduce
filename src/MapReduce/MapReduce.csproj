@@ -1,13 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>QRWells.MapReduce</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PackageId>QRWells.MapReduce</PackageId>
+        <Version>0.1.0</Version>
+        <Title>MapReduce</Title>
+        <Authors>QRWells</Authors>
+        <Copyright>Copyright (c) 2023 Qirui Wang</Copyright>
+        <NeutralLanguage>en</NeutralLanguage>
+        <TargetFramework>net7.0</TargetFramework>
+        <PublishSingleFile>true</PublishSingleFile>
+        <PublishTrimmed>true</PublishTrimmed>
+        <OutputType>Exe</OutputType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,11 +27,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
+        <PackageReference Include="CommandLineParser" Version="2.9.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MapReduce.Rpc\MapReduce.Rpc.csproj"/>
+        <ProjectReference Include="..\MapReduce.Rpc\MapReduce.Rpc.csproj" />
     </ItemGroup>
 
 </Project>
